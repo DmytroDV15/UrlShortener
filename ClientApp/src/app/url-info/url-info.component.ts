@@ -23,10 +23,6 @@ export class UrlInfoComponent implements OnInit {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
-    const userId = sessionStorage.getItem('userID');
-    if (!userId) {
-      this.router.navigate(['/login']);
-    }
     this.urlService.infoUrl(Number(id)).subscribe((data) => {
       this.urlInfo = data;
     });
