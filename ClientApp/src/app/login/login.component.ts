@@ -3,7 +3,7 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 import { LoginService } from '../Services/login.service';
 import { Router } from '@angular/router';
 import { loginModel } from '../Interfaces/loginModel.interface';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -21,13 +21,16 @@ import { MatButtonModule } from '@angular/material/button';
     MatButtonModule,
     MatDividerModule,
     MatIconModule,
+    ReactiveFormsModule
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
 export class LoginComponent {
-  login: string = '';
-  password: string = '';
+  loginForm = new FormGroup({
+    login: new FormControl('', Validators.required),
+    password: new FormControl('', [Validators.required, Validators.minLength(6)]),});
+
   errorMessage: string = '';
 
   constructor(
@@ -36,7 +39,12 @@ export class LoginComponent {
   ) {}
 
   onSubmit() {
-    const user: loginModel = { login: this.login, password: this.password };
+    if (this.loginForm.invalid) {
+      this.errorMessage = 'Please fill in all fields.';
+      return;
+    }
+
+    const user: loginModel = { login: this.loginForm.value.login || '', password: this.loginForm.value.password || '' };
 
     this.loginService.login(user).subscribe({
       next: (result) => {
